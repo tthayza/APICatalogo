@@ -18,18 +18,18 @@ namespace APICatalogo.Controllers
         }
 
         [HttpGet("produtos")] 
-        public ActionResult<IEnumerable<Categoria>> GetCategoriasProdutos()
+        public async Task<ActionResult<IEnumerable<Categoria>>> GetCategoriasProdutos()
         {
-            return _context.Categorias.Include(p=> p.Produtos).Where(c => c.CategoriaId <=5).ToList();
+            return await _context.Categorias.Include(p=> p.Produtos).Where(c => c.CategoriaId <=5).ToListAsync();
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Categoria>> Get()
+        public async Task<ActionResult<IEnumerable<Categoria>>> Get()
         {
 
             try
             {
-                return _context.Categorias.AsNoTracking().ToList();
+                return await _context.Categorias.AsNoTracking().ToListAsync();
             }
             catch (Exception)
             {
