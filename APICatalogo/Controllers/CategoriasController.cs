@@ -33,7 +33,6 @@ namespace APICatalogo.Controllers
             }
             catch (Exception)
             {
-
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     "Houve um problema ao tratar sua solicitação.");
             }
