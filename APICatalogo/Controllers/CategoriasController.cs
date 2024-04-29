@@ -3,6 +3,7 @@ using APICatalogo.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.WebEncoders.Testing;
 
 namespace APICatalogo.Controllers
 {
@@ -43,8 +44,12 @@ namespace APICatalogo.Controllers
         [HttpGet("{id:int}", Name = "ObterCategoria")]
         public ActionResult<Categoria> Get(int id)
         {
+            //throw new Exception("Exceção ao retornar a categoria pelo Id");
+
+
             try
             {
+                
                 var categoria = _context.Categorias.FirstOrDefault(p => p.CategoriaId == id);
                 if (categoria is null)
                 {

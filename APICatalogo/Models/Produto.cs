@@ -3,11 +3,13 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
+
 namespace APICatalogo.Models
 {
     [Table("Produtos")]
     public class Produto : IValidatableObject
     {
+
         [Key]
         public int ProdutoId { get; set; }
 
