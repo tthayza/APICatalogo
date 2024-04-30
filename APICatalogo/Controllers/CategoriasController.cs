@@ -1,4 +1,5 @@
 ﻿using APICatalogo.Context;
+using APICatalogo.Filters;
 using APICatalogo.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,19 +13,26 @@ namespace APICatalogo.Controllers
     public class CategoriasController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly ILogger _logger;
        
-        public CategoriasController(AppDbContext context)
+        public CategoriasController(AppDbContext context, ILogger<CategoriasController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         [HttpGet("produtos")] 
         public async Task<ActionResult<IEnumerable<Categoria>>> GetCategoriasProdutos()
+
         {
+
+
+            _logger.LogInformation(" ========================= ====================== get/categorias/produtos");
             return await _context.Categorias.Include(p=> p.Produtos).Where(c => c.CategoriaId <=5).ToListAsync();
         }
 
         [HttpGet]
+        [ServiceFilter(typeof(ApiLoggingFilter))]
         public async Task<ActionResult<IEnumerable<Categoria>>> Get()
         {
 
@@ -44,15 +52,15 @@ namespace APICatalogo.Controllers
         [HttpGet("{id:int}", Name = "ObterCategoria")]
         public ActionResult<Categoria> Get(int id)
         {
-            //throw new Exception("Exceção ao retornar a categoria pelo Id");
-
-
+            //throw new Exception("Exceção ao retornar a categoria pelo Id")
             try
             {
-                
+                _logger.LogInformation($"********* get categorias/id = {id} ************");
                 var categoria = _context.Categorias.FirstOrDefault(p => p.CategoriaId == id);
+                
                 if (categoria is null)
                 {
+                    _logger.LogInformation($"********* get categorias/id = {id} NOT FOUND ************");
                     return NotFound($"Categoria de id {id} não encontrada");
                 }
                 return Ok(categoria);
