@@ -13,12 +13,12 @@ namespace APICatalogo.Controllers
     [ApiController]
     public class CategoriasController : ControllerBase
     {
-        private readonly ICategoriaRepository _repository;
+        private readonly IRepository<Categoria> _repository;
         private readonly ILogger _logger;
 
         
 
-        public CategoriasController(ICategoriaRepository repository, ILogger<CategoriasController> logger)
+        public CategoriasController(IRepository<Categoria> repository, ILogger<CategoriasController> logger)
         {
             _repository = repository;
             _logger = logger;
@@ -28,7 +28,7 @@ namespace APICatalogo.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Categoria>> Get()
         {
-            var categorias = _repository.GetCategorias();
+            var categorias = _repository.GetAll();
             return Ok(categorias);
         }
 
@@ -36,7 +36,7 @@ namespace APICatalogo.Controllers
         [HttpGet("{id:int}", Name = "ObterCategoria")]
         public ActionResult<Categoria> Get(int id)
         {
-                var categoria = _repository.GetCategoria(id);
+                var categoria = _repository.Get(c => c.CategoriaId == id);
                 
                 if (categoria is null)
                 {
@@ -58,7 +58,6 @@ namespace APICatalogo.Controllers
             }
     
             _repository.Create(categoria);
-            // _repository.SaveChanges();
 
             return new CreatedAtRouteResult("ObterCategoria",
                 new { id = categoria.CategoriaId }, categoria);
@@ -80,7 +79,7 @@ namespace APICatalogo.Controllers
         [HttpDelete("{id:int}")]
         public ActionResult<Categoria> Delete(int id)
         {
-            var categoria = _repository.GetCategoria(id);
+            var categoria = _repository.Get(c => c.CategoriaId == id);
 
             if (categoria == null)
             {
@@ -88,7 +87,7 @@ namespace APICatalogo.Controllers
                 return NotFound($"Categoria com id {id} não encontrada.");
             }
 
-            _repository.Delete(id);
+            _repository.Delete(categoria);
             return Ok(categoria);
         }
     }
