@@ -8,7 +8,11 @@ namespace APICatalogo.Repositories
         // IEnumerable<Produto> GetProdutos(ProdutosParameters produtosParams);
 
         PagedList<Produto> GetProdutos(ProdutosParameters produtosParams);
+        PagedList<Produto> GetProdutosFiltroPreco(ProdutosFiltroPreco produtosFiltroParams);
+
         IEnumerable<Produto> GetProdutosPorCategoria(int id);
+
+
 
     }
 }
