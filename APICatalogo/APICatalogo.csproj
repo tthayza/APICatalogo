@@ -24,7 +24,8 @@
 	<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.1">
 		<PrivateAssets>all</PrivateAssets>
 		<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-	</PackageReference>	
+	</PackageReference>
+	<PackageReference Include="X.PagedList.Mvc.Core" Version="8.4.7" />	
 	  
   </ItemGroup>
 

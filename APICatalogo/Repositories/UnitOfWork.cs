@@ -1,4 +1,5 @@
 ﻿using APICatalogo.Context;
+using NuGet.Packaging.Signing;
 
 namespace APICatalogo.Repositories
 {
@@ -6,6 +7,7 @@ namespace APICatalogo.Repositories
     {
         private IProdutoRepository _produtoRepo;
         private ICategoriaRepository _categoriaRepo;
+       
 
 
 
@@ -32,9 +34,9 @@ namespace APICatalogo.Repositories
             }
         }
 
-        public void Commit()
+        public async Task CommitAsync()
         {
-            _context.SaveChanges();
+           await _context.SaveChangesAsync();
         }
 
         public void Dispose()
