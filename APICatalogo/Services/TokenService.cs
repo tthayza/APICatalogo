@@ -22,7 +22,7 @@ namespace APICatalogo.Services
             {
                 Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.AddMinutes(_config.GetSection("JWT")
-                .GetValue<double>("TokenValidityMinutes")),
+                            .GetValue<double>("TokenValidityInMinutes")),
                 Audience = _config.GetSection("JWT").GetValue<string>("ValidAudience"),
                 Issuer = _config.GetSection("JWT").GetValue<string>("ValidIssuer"),
                 SigningCredentials = signingCredentials,

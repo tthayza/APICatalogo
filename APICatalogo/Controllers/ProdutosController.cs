@@ -5,6 +5,7 @@ using APICatalogo.Pagination;
 using APICatalogo.Repositories;
 using AutoMapper;
 using Azure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -75,6 +76,7 @@ namespace APICatalogo.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy ="UserOnly")]
         public async Task<ActionResult<IEnumerable<ProdutoDTO>>> Get()
         {
             var produtos = await _uof.ProdutoRepository.GetAllAsync();
