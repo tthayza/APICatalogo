@@ -27,6 +27,16 @@ builder.Services.AddControllers(options =>
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 }).AddNewtonsoftJson();
 
+builder.Services.AddCors(options =>
+    options.AddPolicy("SourcesAllowedAccess",
+    policy =>
+    {
+        policy.WithOrigins("https://localhost:7062")
+        .WithMethods("GET", "POST")
+        .AllowAnyHeader();
+    })
+);
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -106,10 +116,11 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
     options.AddPolicy("ExclusiveOnly",
         policy => policy.RequireAssertion(context =>
-        context.User.HasClaim(claim => claim.Type == "id" &&
-                                       claim.Value == "fred" ||
-                                       context.User.IsInRole("SuperAdmin"));
+            context.User.HasClaim(claim => claim.Type == "id" &&
+                                           claim.Value == "fred") ||
+                                           context.User.IsInRole("SuperAdmin")));
 });
+
 
 builder.Services.AddScoped<ApiLoggingFilter>();
 builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
@@ -136,6 +147,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors();
 
 app.UseAuthorization();
 
