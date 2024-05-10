@@ -16,7 +16,8 @@ namespace APICatalogo.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    [ApiExplorerSettings(IgnoreApi = true)]
+    [ApiConventionType(typeof(DefaultApiConventions))]
+    //[ApiExplorerSettings(IgnoreApi = true)]
     public class ProdutosController : ControllerBase
     {
 
@@ -76,6 +77,10 @@ namespace APICatalogo.Controllers
             return Ok(produtosDto);
         }
 
+        /// <summary>
+        /// Obtem uma lista de objetos Produto
+        /// </summary>
+        /// <returns>Uma lista de objetos Produto</returns>
         [HttpGet]
         [Authorize(Policy ="UserOnly")]
         public async Task<ActionResult<IEnumerable<ProdutoDTO>>> Get()
@@ -89,6 +94,11 @@ namespace APICatalogo.Controllers
             return Ok(produtosDto);
         }
 
+        /// <summary>
+        /// Obtem um Produto pelo seu id
+        /// </summary>
+        /// <param name="id">Código do Produto</param>
+        /// <returns>Um Objeto Produto</returns>
         [HttpGet("{id}", Name = "ObterProduto")]
         public async Task<ActionResult<ProdutoDTO>> Get(int id)
         {

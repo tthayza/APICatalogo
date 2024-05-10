@@ -10,18 +10,22 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Operations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.WebEncoders.Testing;
 using Newtonsoft.Json;
 using X.PagedList;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace APICatalogo.Controllers
 {
+    //[ApiExplorerSettings(IgnoreApi = true)]
     //[EnableCors("SourcesAllowedAccess")]
     [Route("[controller]")]
     [ApiController]
     [EnableRateLimiting("fixedwindow")]
-    [ApiExplorerSettings(IgnoreApi = true)]
+    [Produces("application/json")]
     public class CategoriasController : ControllerBase
     {
         private readonly IUnitOfWork _uof;
@@ -35,9 +39,16 @@ namespace APICatalogo.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Obtem uma lista de objetos Categoria
+        /// </summary>
+        /// <returns>Uma lista de objetos Categoria</returns>
 
         [HttpGet]
         [DisableRateLimiting]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
         //[Authorize]
         public async Task<ActionResult<IEnumerable<CategoriaDTO>>> GetAsync()
         {
@@ -100,8 +111,14 @@ namespace APICatalogo.Controllers
             return Ok(categoriasDto);
         }
 
-
+        /// <summary>
+        /// Obtem uma categoria pelo seu id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Objeto Categoria</returns>
         [DisableCors]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet("{id:int}", Name = "ObterCategoria")]
         public async Task<ActionResult<CategoriaDTO>> GetAsync(int id)
         {
@@ -126,8 +143,25 @@ namespace APICatalogo.Controllers
                 return Ok(categoriaDto);
             
         }
-
+        /// <summary>
+        /// Inclui uma nova categoria
+        /// </summary>
+        /// <remarks>
+        ///    Exemplo de request:
+        ///    POST api/categorias
+        ///    {
+        ///         "categoriaId": 1,
+        ///         "nome": "categoria1",
+        ///         "imagemUrl": "http://teste.net/1.jpg"
+        ///    }
+        /// </remarks>
+        /// <param name="categoriaDto">objeto Categoria</param>
+        /// <returns>O Objeto Categoria inclusa</returns>
+        /// <remarks>Retorna um objeto Categoria incluído</remarks>
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesDefaultResponseType]
         public async Task<ActionResult<CategoriaDTO>> Post(CategoriaDTO categoriaDto)
         {
 
@@ -161,6 +195,9 @@ namespace APICatalogo.Controllers
         }
 
         [HttpPut("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesDefaultResponseType]
         public async Task<ActionResult<CategoriaDTO>> Put(int id, CategoriaDTO categoriaDto)
         {
             if (id != categoriaDto.CategoriaId)
@@ -178,7 +215,7 @@ namespace APICatalogo.Controllers
 
             var categoria = categoriaDto.ToCategoria();
 
-            _uof.CategoriaRepository.Update(categoria);
+            _ = _uof.CategoriaRepository.Update(categoria);
             await _uof.CommitAsync();
 
             //var categoriaDtoAtualizada = new CategoriaDTO()
@@ -196,6 +233,9 @@ namespace APICatalogo.Controllers
         
         [HttpDelete("{id:int}")]
         [Authorize(Policy = "AdminOnly")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
         public async Task<ActionResult<CategoriaDTO>> Delete(int id)
         {
             var categoria = await _uof.CategoriaRepository.GetAsync(c => c.CategoriaId == id);
