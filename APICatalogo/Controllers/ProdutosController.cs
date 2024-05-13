@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using X.PagedList;
+using Microsoft.AspNetCore.Http;
 
 namespace APICatalogo.Controllers
 {
@@ -34,7 +35,7 @@ namespace APICatalogo.Controllers
         public async Task<ActionResult<IEnumerable<ProdutoDTO>>> GetProdutosCategoria(int id)
         {
             var produtos = await _uof.ProdutoRepository.GetProdutosPorCategoriaAsync(id);
-            if (produtos is null)
+            if (produtos is null )
             {
                 return NotFound();
             }
@@ -83,15 +84,28 @@ namespace APICatalogo.Controllers
         /// <returns>Uma lista de objetos Produto</returns>
         [HttpGet]
         [Authorize(Policy ="UserOnly")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
         public async Task<ActionResult<IEnumerable<ProdutoDTO>>> Get()
         {
-            var produtos = await _uof.ProdutoRepository.GetAllAsync();
-            if (produtos is null)
+
+            try
             {
-                return NotFound();
+                var produtos = await _uof.ProdutoRepository.GetAllAsync();
+                
+                if (produtos is null)
+                {
+                    return NotFound();
+                }
+                var produtosDto = _mapper.Map<IEnumerable<ProdutoDTO>>(produtos);
+                return Ok(produtosDto);
             }
-            var produtosDto = _mapper.Map<IEnumerable<ProdutoDTO>>(produtos);
-            return Ok(produtosDto);
+            catch (Exception ) {
+                return BadRequest();
+            }
+
         }
 
         /// <summary>
@@ -100,8 +114,13 @@ namespace APICatalogo.Controllers
         /// <param name="id">Código do Produto</param>
         /// <returns>Um Objeto Produto</returns>
         [HttpGet("{id}", Name = "ObterProduto")]
-        public async Task<ActionResult<ProdutoDTO>> Get(int id)
+        public async Task<ActionResult<ProdutoDTO>> Get(int? id)
         {
+            if (id == null || id <= 0)
+            {
+                return BadRequest("ID de produto inválido");
+            }
+
             var produto = await _uof.ProdutoRepository.GetAsync(p => p.ProdutoId == id);
             if (produto is null)
             {
